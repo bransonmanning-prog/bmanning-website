@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freestyle Skiing Elite | Branson Manning</title>
+    <link rel="stylesheet" href="css/mystyles.css">
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <nav class="simple-nav">
+        <a href="index.html">Home</a>
+        <a href="resume.html">Resume</a> 
+        <a href="#tableau-section">Data View</a> 
+    </nav>
+
+    <header class="ski-header">
+        <div class="header-overlay">
+            <h1>SKIING FREERIDE LEGENDS</h1>
+            <p>The athletes pushing the boundaries of physics and creativity on snow.</p>
+        </div>
+    </header>
+
+    <div class="content-container">
+        <div class="info-block">
+            <h2 class="block-title"><i class="fas fa-skiing"></i> Top Tier Athletes</h2>
+            <ol class="main-athlete-list">
+                <li><strong>Park & Pipe Specialists</strong>
+                    <p class="section-desc">These athletes turn icy slopes into playgrounds, utilizing precise geometry and massive airtime.</p>
+                    <ul>
+                        <li><strong>Alex Hall:</strong> A 2022 Olympic Gold Medalist known for "unreal" rotations. He often lands tricks that seem physically impossible, including his signature 2160.</li>
+                        <li><strong>Eileen Gu:</strong> A global icon who dominates Big Air, Slopestyle, and Halfpipe. She is the first action sports athlete to win three medals at a single Olympics.</li>
+                        <li><strong>Nick Goepper:</strong> The veteran of the US team. Nick is a three-time Olympic medalist and multi-time X-Games champion known for his technical rail mastery.</li>
+                    </ul>
+                </li>
+                <li><strong>Freeride World Tour Icons</strong>
+                    <p class="section-desc">Big mountain skiers who treat 50-degree cliffs like a Sunday stroll.</p>
+                    <ul>
+                        <li><strong>Markus Eder:</strong> Perhaps the most complete skier in the world. He transitioned from park skiing to winning the Freeride World Tour, famous for "The Ultimate Run."</li>
+                        <li><strong>Hedvig Wessel:</strong> A Norwegian powerhouse who brings a background in moguls to the steepest faces in the Alps. She is known for taking the most aggressive lines on the tour.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="media-block">
+            <h2 class="block-title"><i class="fas fa-video"></i> The Action</h2>
+            <div class="img-frame">
+                <img src="assets/img/factionski.jpg" alt="Skier in powder" class="ski-img">
+            </div>
+            <br>
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/qEbXHIclONM?si=pE4B97q0gfEswK-O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div id="tableau-section" class="data-block">
+            <h2 class="block-title"><i class="fas fa-chart-line"></i> Global Snowfall Trends</h2>
+            <p class="data-intro">Data is at the heart of finding the perfect line. Explore the historical snowfall stats that these athletes rely on for their seasons.</p>
+
+            <div class='tableauPlaceholder' id='viz1776193611412' style='position: relative'>
+                <noscript>
+                    <a href='#'><img alt='Story 2 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Sk&#47;Skiresorts-snowfall&#47;Story2&#47;1_rss.png' style='border: none' /></a>
+                </noscript>
+                <object class='tableauViz' style='display:none;'>
+                    <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                    <param name='embed_code_version' value='3' />
+                    <param name='site_root' value='' />
+                    <param name='name' value='Skiresorts-snowfall&#47;Story2' />
+                    <param name='tabs' value='no' />
+                    <param name='toolbar' value='yes' />
+                    <param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Sk&#47;Skiresorts-snowfall&#47;Story2&#47;1.png' />
+                    <param name='animate_transition' value='yes' />
+                    <param name='display_static_image' value='yes' />
+                    <param name='display_spinner' value='yes' />
+                    <param name='display_overlay' value='yes' />
+                    <param name='display_count' value='yes' />
+                    <param name='language' value='en-US' />
+                </object>
+            </div>
+        </div>
+    </div>
+
+    <footer class="ski-footer">
+        <p>Copyright &copy; Branson Manning 2026</p>
+    </footer>
+
+    <script type='text/javascript'>
+        var divElement = document.getElementById('viz1776193611412');
+        var vizElement = divElement.getElementsByTagName('object')[0];
+        vizElement.style.width = '100%';
+        vizElement.style.height = (divElement.offsetWidth * 0.6) + 'px';
+        var scriptElement = document.createElement('script');
+        scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+        vizElement.parentNode.insertBefore(scriptElement, vizElement);
+    </script>
+
+</body>
+</html>

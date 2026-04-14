@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The New 2048</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --grid-bg: #1e293b;
+            --empty-tile: #334155;
+            --text-dark: #f8fafc;
+            --accent-purple: #a855f7;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .header {
+            width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 60px;
+            margin: 0;
+            background: linear-gradient(45deg, #3b82f6, #a855f7);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-container {
+            background: var(--grid-bg);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .score-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
+        #score { font-size: 24px; font-weight: bold; }
+
+        .grid-container {
+            width: 400px;
+            height: 400px;
+            background-color: var(--grid-bg);
+            border-radius: 8px;
+            position: relative;
+            padding: 15px;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .tile {
+            width: 100%;
+            height: 100%;
+            background: var(--empty-tile);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            font-weight: bold;
+            transition: transform 0.1s ease-in-out, background-color 0.2s;
+        }
+
+        /* Tile Color Scheme: Blue to Purple Gradients */
+        .tile-2 { background: #60a5fa; color: #fff; }
+        .tile-4 { background: #3b82f6; color: #fff; }
+        .tile-8 { background: #2563eb; color: #fff; }
+        .tile-16 { background: #1d4ed8; color: #fff; }
+        .tile-32 { background: #1e40af; color: #fff; }
+        .tile-64 { background: #6366f1; color: #fff; }
+        .tile-128 { background: #8b5cf6; color: #fff; box-shadow: 0 0 10px #8b5cf6; font-size: 30px; }
+        .tile-256 { background: #a855f7; color: #fff; box-shadow: 0 0 15px #a855f7; font-size: 30px; }
+        .tile-512 { background: #d946ef; color: #fff; box-shadow: 0 0 20px #d946ef; font-size: 30px; }
+        .tile-1024 { background: #ec4899; color: #fff; box-shadow: 0 0 25px #ec4899; font-size: 25px; }
+        .tile-2048 { background: #f43f5e; color: #fff; box-shadow: 0 0 30px #f43f5e; font-size: 25px; }
+
+        .game-over {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            z-index: 10;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        button:hover { background: #9333ea; }
+
+        @media (max-width: 450px) {
+            .header, .grid-container { width: 320px; }
+            .grid-container { height: 320px; gap: 10px; padding: 10px; }
+            h1 { font-size: 40px; }
+            .tile { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>2048</h1>
+        <div class="score-container">
+            <div class="score-label">Score</div>
+            <div id="score">0</div>
+        </div>
+    </div>
+
+    <div class="grid-container" id="grid">
+        <div class="game-over" id="game-over">
+            <h2>Game Over!</h2>
+            <button onclick="resetGame()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const gridDisplay = document.getElementById('grid');
+        const scoreDisplay = document.getElementById('score');
+        const gameOverDisplay = document.getElementById('game-over');
+        let width = 4;
+        let squares = [];
+        let score = 0;
+
+        // Create the board
+        function createBoard() {
+            for (let i = 0; i < width * width; i++) {
+                let square = document.createElement('div');
+                square.innerHTML = '';
+                square.className = 'tile';
+                gridDisplay.appendChild(square);
+                squares.push(square);
+            }
+            generate();
+            generate();
+        }
+
+        // Generate a new number
+        function generate() {
+            let randomNumber = Math.floor(Math.random() * squares.length);
+            if (squares[randomNumber].innerHTML === '') {
+                let val = Math.random() > 0.1 ? 2 : 4;
+                squares[randomNumber].innerHTML = val;
+                squares[randomNumber].classList.add(`tile-${val}`);
+                checkForGameOver();
+            } else generate();
+        }
+
+        function moveRight() {
+            for (let i = 0; i < 16; i++) {
+                if (i % 4 === 0) {
+                    let totalOne = squares[i].innerHTML;
+                    let totalTwo = squares[i + 1].innerHTML;
+                    let totalThree = squares[i + 2].innerHTML;
+                    let totalFour = squares[i + 3].innerHTML;
+                    let row = [parseInt(totalOne), parseInt(totalTwo), parseInt(totalThree), parseInt(totalFour)];
+
+                    let filteredRow = row.filter(num => num);
+                    let missing = 4 - filteredRow.length;
+                    let zeros = Array(missing).fill('');
+                    let newRow = zeros.concat(filteredRow);
+
+                    squares[i].innerHTML = newRow[0] || '';
+                    squares[i + 1].innerHTML = newRow[1] || '';
+                    squares[i + 2].innerHTML = newRow[2] || '';
+                    squares[i + 3].innerHTML = newRow[3] || '';
+                }
+            }
+        }
+
+        function moveLeft() {
+            for (let i = 0; i < 16; i++) {
+                if (i % 4 === 0) {
+                    let totalOne = squares[i].innerHTML;
+                    let totalTwo = squares[i + 1].innerHTML;
+                    let totalThree = squares[i + 2].innerHTML;
+                    let totalFour = squares[i + 3].innerHTML;
+                    let row = [parseInt(totalOne), parseInt(totalTwo), parseInt(totalThree), parseInt(totalFour)];
+
+                    let filteredRow = row.filter(num => num);
+                    let missing = 4 - filteredRow.length;
+                    let zeros = Array(missing).fill('');
+                    let newRow = filteredRow.concat(zeros);
+
+                    squares[i].innerHTML = newRow[0] || '';
+                    squares[i + 1].innerHTML = newRow[1] || '';
+                    squares[i + 2].innerHTML = newRow[2] || '';
+                    squares[i + 3].innerHTML = newRow[3] || '';
+                }
+            }
+        }
+
+        function moveUp() {
+            for (let i = 0; i < 4; i++) {
+                let totalOne = squares[i].innerHTML;
+                let totalTwo = squares[i + width].innerHTML;
+                let totalThree = squares[i + width * 2].innerHTML;
+                let totalFour = squares[i + width * 3].innerHTML;
+                let column = [parseInt(totalOne), parseInt(totalTwo), parseInt(totalThree), parseInt(totalFour)];
+
+                let filteredCol = column.filter(num => num);
+                let missing = 4 - filteredCol.length;
+                let zeros = Array(missing).fill('');
+                let newCol = filteredCol.concat(zeros);
+
+                squares[i].innerHTML = newCol[0] || '';
+                squares[i + width].innerHTML = newCol[1] || '';
+                squares[i + width * 2].innerHTML = newCol[2] || '';
+                squares[i + width * 3].innerHTML = newCol[3] || '';
+            }
+        }
+
+        function moveDown() {
+            for (let i = 0; i < 4; i++) {
+                let totalOne = squares[i].innerHTML;
+                let totalTwo = squares[i + width].innerHTML;
+                let totalThree = squares[i + width * 2].innerHTML;
+                let totalFour = squares[i + width * 3].innerHTML;
+                let column = [parseInt(totalOne), parseInt(totalTwo), parseInt(totalThree), parseInt(totalFour)];
+
+                let filteredCol = column.filter(num => num);
+                let missing = 4 - filteredCol.length;
+                let zeros = Array(missing).fill('');
+                let newCol = zeros.concat(filteredCol);
+
+                squares[i].innerHTML = newCol[0] || '';
+                squares[i + width].innerHTML = newCol[1] || '';
+                squares[i + width * 2].innerHTML = newCol[2] || '';
+                squares[i + width * 3].innerHTML = newCol[3] || '';
+            }
+        }
+
+        function combineRow() {
+            for (let i = 0; i < 15; i++) {
+                if (squares[i].innerHTML === squares[i + 1].innerHTML && squares[i].innerHTML !== '' && (i + 1) % 4 !== 0) {
+                    let combinedTotal = parseInt(squares[i].innerHTML) + parseInt(squares[i + 1].innerHTML);
+                    squares[i].innerHTML = combinedTotal;
+                    squares[i + 1].innerHTML = '';
+                    score += combinedTotal;
+                    scoreDisplay.innerHTML = score;
+                }
+            }
+        }
+
+        function combineColumn() {
+            for (let i = 0; i < 12; i++) {
+                if (squares[i].innerHTML === squares[i + width].innerHTML && squares[i].innerHTML !== '') {
+                    let combinedTotal = parseInt(squares[i].innerHTML) + parseInt(squares[i + width].innerHTML);
+                    squares[i].innerHTML = combinedTotal;
+                    squares[i + width].innerHTML = '';
+                    score += combinedTotal;
+                    scoreDisplay.innerHTML = score;
+                }
+            }
+        }
+
+        function updateTileColors() {
+            squares.forEach(square => {
+                square.className = 'tile';
+                if (square.innerHTML !== '') {
+                    square.classList.add(`tile-${square.innerHTML}`);
+                }
+            });
+        }
+
+        function control(e) {
+            if (e.keyCode === 37) keyLeft();
+            else if (e.keyCode === 38) keyUp();
+            else if (e.keyCode === 39) keyRight();
+            else if (e.keyCode === 40) keyDown();
+        }
+
+        function keyLeft() {
+            moveLeft();
+            combineRow();
+            moveLeft();
+            generate();
+            updateTileColors();
+        }
+
+        function keyRight() {
+            moveRight();
+            combineRow();
+            moveRight();
+            generate();
+            updateTileColors();
+        }
+
+        function keyUp() {
+            moveUp();
+            combineColumn();
+            moveUp();
+            generate();
+            updateTileColors();
+        }
+
+        function keyDown() {
+            moveDown();
+            combineColumn();
+            moveDown();
+            generate();
+            updateTileColors();
+        }
+
+        function checkForGameOver() {
+            let zeros = 0;
+            for (let i = 0; i < squares.length; i++) {
+                if (squares[i].innerHTML === '') zeros++;
+            }
+            if (zeros === 0) {
+                gameOverDisplay.style.display = 'flex';
+                document.removeEventListener('keydown', control);
+            }
+        }
+
+        function resetGame() {
+            score = 0;
+            scoreDisplay.innerHTML = score;
+            gameOverDisplay.style.display = 'none';
+            squares.forEach(sq => {
+                sq.innerHTML = '';
+                sq.className = 'tile';
+            });
+            generate();
+            generate();
+            document.addEventListener('keydown', control);
+        }
+
+        // Mobile Swiping
+        let touchstartX = 0;
+        let touchstartY = 0;
+        let touchendX = 0;
+        let touchendY = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+            touchstartY = e.changedTouches[0].screenY;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            touchendY = e.changedTouches[0].screenY;
+            handleGesture();
+        });
+
+        function handleGesture() {
+            let dx = touchendX - touchstartX;
+            let dy = touchendY - touchstartY;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (dx > 0) keyRight(); else keyLeft();
+            } else {
+                if (dy > 0) keyDown(); else keyUp();
+            }
+        }
+
+        createBoard();
+        document.addEventListener('keydown', control);
+
+    </script>
+</body>
+</html>
